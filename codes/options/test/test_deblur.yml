@@ -1,0 +1,42 @@
+#### general settings
+name: 65_full # experiment params. support debug.
+model: SpikeDeblur
+gpu_ids: [2]
+
+#### description
+description: "65_full"
+
+#### datasets
+datasets:
+  train:
+    length_spike: 65
+
+  val:
+    d_name: X4K1000FPS
+    dataset_root: '/home/data/jyzhang/XVFI/'
+    reduce_scale: 1
+    length_spike: 65
+
+    n_workers: 8
+    batch_size: 8
+    crop_size: 0
+
+  test:
+    d_name: X4K1000FPS
+    dataset_root: '/home/data/jyzhang/XVFI/'
+    reduce_scale: 400
+    length_spike: 65
+
+    n_workers: 8
+    batch_size: 8
+    crop_size: 0
+
+#### path
+path:
+  pretrain_model: "C:/Users/Administrator/Desktop/spkdeblur_xv4k_full/codes/gopro_100000_SpikeDeblur.pth"
+  # pretrain_model: "/home/csy/2728/SpikeDeblurring-main/experiments/230429-211732_violent_deblur_NAFNET_bt8_2e-4_128_33_nospike/models/96000_SpikeDeblur.pth"
+  strict_load: true
+
+#### training settings
+train:
+  manual_seed: 1314
