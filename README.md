@@ -19,7 +19,7 @@ python valid.py -opt options/test/test_deblur.yml
 python test.py -opt options/test/test_deblur.yml
 ```
 
-# Citation
+## Citation
 ```
 @article{chen2024enhancing,
   title={Enhancing Motion Deblurring in High-Speed Scenes with Spike Streams},
@@ -29,3 +29,10 @@ python test.py -opt options/test/test_deblur.yml
   year={2024}
 }
 ```
+
+old sequence?
+xv4k dataset?
+数据集连接
+mask
+log之类的？
+放结果图片？（刷一下那种）网络结构？
