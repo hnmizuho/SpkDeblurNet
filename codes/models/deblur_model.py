@@ -91,20 +91,20 @@ class SpikeDeblur_Model(BaseModel):
             self.MoBanNet.eval()
 
     def feed_data(self, data):
-        self.t = data['t'].to(self.device) # useless
+        # self.t = data['t'].to(self.device) # useless
         self.gt = data['gt'].to(self.device)
         self.gt_gray = data['gt_gray'].to(self.device)
-        self.blur_gray = data['blur_gray'].to(self.device)
+        # self.blur_gray = data['blur_gray'].to(self.device)
         self.blur = data['blur'].to(self.device)
         self.spike = data['spike'].to(self.device)
         self.tfi = data['tfi'].to(self.device)
         # self.flow = data['flow'].to(self.device)
 
     def feed_test_data(self, data):
-        self.t = data['t'].to(self.device)
+        # self.t = data['t'].to(self.device)
         self.gt = data['gt'].to(self.device)  
         self.gt_gray = data['gt_gray'].to(self.device)
-        self.blur_gray = data['blur_gray'].to(self.device)
+        # self.blur_gray = data['blur_gray'].to(self.device)
         self.blur = data['blur'].to(self.device)
         self.spike = data['spike'].to(self.device)
         self.tfi = data['tfi'].to(self.device)
@@ -126,7 +126,7 @@ class SpikeDeblur_Model(BaseModel):
     def optimize_parameters(self, step):
         self.optimizer.zero_grad()
 
-        self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
+        self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.tfi)
         # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
         # self.gt_mask = self.get_gt_mask(self.blur_gray,self.gt_gray)
         l_n2n = self.loss_forward(self.pred, self.gt) + self.loss_forward(self.recon, self.gt_gray) + self.loss_forward(self.quick_sharp, self.gt)
@@ -153,7 +153,7 @@ class SpikeDeblur_Model(BaseModel):
         self.MoBanNet.eval()
         with torch.no_grad():
             # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t)
-            self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
+            self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.tfi)
             # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
 
         self.MoBanNet.train()

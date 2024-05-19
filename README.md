@@ -30,9 +30,5 @@ python test.py -opt options/test/test_deblur.yml
 }
 ```
 
-old sequence?
-xv4k dataset?
-数据集连接
-mask
-log之类的？
-放结果图片？（刷一下那种）网络结构？
+数据集链接
+pth之类的？

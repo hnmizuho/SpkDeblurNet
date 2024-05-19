@@ -18,9 +18,7 @@ tfi = middleTFI(y[0].cpu().numpy(), 28)
 tfi = torch.tensor(tfi).unsqueeze(0).unsqueeze(0).cuda()
 print(x.shape, y.shape, tfi.shape)
 
-t = torch.randn(1,1,128,128).cuda()
-z = torch.randn(1,1,128,128).cuda()
-out = model(x,y,t,tfi,z)
+out = model(x,y,tfi)
 sharp = out[0].detach().cpu().numpy()
 
 # save

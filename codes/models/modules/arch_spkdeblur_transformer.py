@@ -698,7 +698,7 @@ class SpkDeblurNet(nn.Module):
         x = rearrange(x, 'B C H W -> B (H W) C').contiguous()
         return x
     
-    def forward(self, ori_blur, spike, t, tfi, blur_gray):
+    def forward(self, ori_blur, spike, tfi):
         Hb, Wb = ori_blur.shape[-2:]
         # blur = self.pad_image(ori_blur, 4 * self.D_window_size)
         # blur = self.D_conv_down(blur)

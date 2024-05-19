@@ -10,7 +10,7 @@ description: "56 full,  gopro, efnet's super param"
 #### datasets
 datasets:
   train:
-    d_name: X4K1000FPS
+    d_name: GoPro
     dataset_root: '/home/data/csy/'
     reduce_scale: 1
     length_spike: 56
@@ -20,7 +20,7 @@ datasets:
     crop_size: 256
 
   val:
-    d_name: X4K1000FPS
+    d_name: GoPro
     dataset_root: '/home/data/csy/'
     reduce_scale: 1
     length_spike: 56

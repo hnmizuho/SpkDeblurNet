@@ -108,11 +108,11 @@ class Sequence(Dataset):
         tfi = torch.from_numpy(tfi).unsqueeze(0).float()
 
         return {
-            't': torch.tensor(t).float(),
+            # 't': torch.tensor(t).float(),
             'blur': blur_img,
             'gt': sharp_img,
             "gt_gray": sharp_img_gray,
-            "blur_gray": blur_img_gray,
+            # "blur_gray": blur_img_gray,
             'spike': spike,
             'tfi': tfi,
             "img_path": "__".join(str(blurry_rgb_path).split('/')[-4:]) # rename to sole name for compatibility

@@ -22,7 +22,7 @@ VAL_SET_INDEX = [
 ]
 
 
-class X4K1000FPS_DatasetProvider:
+class GoPro_DatasetProvider:
     def __init__(self, opt, train_transforms=None, val_transforms=None, phase="train"):
         dataset_root = Path(opt["dataset_root"])
 
