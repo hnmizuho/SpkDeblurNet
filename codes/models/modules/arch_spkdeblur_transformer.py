@@ -768,5 +768,5 @@ class SpkDeblurNet(nn.Module):
         sharp = sharp[:, :, :Hb, :Wb]
 
         # return sharp, spike_recon, quick_sharp, torch.ones_like(spike_recon)
-        return sharp, spike_recon, quick_sharp, soft_mask
+        return sharp, spike_recon, quick_sharp
         # return sharp, spike_recon

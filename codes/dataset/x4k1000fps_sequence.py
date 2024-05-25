@@ -177,9 +177,9 @@ class Sequence(Dataset):
         blurry_rgb_path = self.blurry_data_list[index]
         sharp_rgb_path = blurry_rgb_path.replace("_blurry_{}".format(self.length_spike), "_fullRGB")
         sharp_rgb_path = self._modify_filename_from_offest(sharp_rgb_path, offest)
-        spike_path = os.path.join(os.path.split(blurry_rgb_path.replace("_blurry_{}".format(self.length_spike), "_spike_2xds"))[0], 'spike.dat')
-        # spike_path = blurry_rgb_path.replace("_blurry_{}".format(self.length_spike), "_spike_2xds_{}".format(self.length_spike))
-        # spike_path = spike_path[:-3]+"dat"
+        # spike_path = os.path.join(os.path.split(blurry_rgb_path.replace("_blurry_{}".format(self.length_spike), "_spike_2xds"))[0], 'spike.dat')
+        spike_path = blurry_rgb_path.replace("_blurry_{}".format(self.length_spike), "_spike_2xds_{}".format(self.length_spike))
+        spike_path = spike_path[:-3]+"dat"
 
         # get sharp image and blur image
         blur_img = Image.open(blurry_rgb_path).convert('RGB')
@@ -191,29 +191,29 @@ class Sequence(Dataset):
         sharp_img = transforms.ToTensor()(sharp_img)
         sharp_img_gray = transforms.ToTensor()(sharp_img_gray)
 
-        # get spike
-        # gt_center_ori_index = self._get_ori_index(blurry_rgb_path)
-        gt_center_ori_index = self._get_ori_index(blurry_rgb_path) + offest
-        left_idx = gt_center_ori_index - self.length_spike//2
-        right_idx = gt_center_ori_index + self.length_spike//2
-        spike = load_vidar_dat(spike_path, width=self.Ws, height=self.Hs)
-        ori_spike_len = spike.shape[0]
-        if left_idx < 0:
-            spike = spike[:right_idx+1, ...]
-            spike = torch.from_numpy(spike).float()
-            zeros = torch.ones(0-left_idx,self.Hs,self.Ws)
-            spike = torch.cat([zeros,spike],0)
-        if right_idx >= ori_spike_len:
-            spike = spike[left_idx:, ...]
-            spike = torch.from_numpy(spike).float()
-            zeros = torch.ones(right_idx-ori_spike_len+1,self.Hs,self.Ws)
-            spike = torch.cat([spike,zeros],0)
-        else:
-            spike = load_vidar_dat(spike_path, width=self.Ws, height=self.Hs)[left_idx:right_idx+1, ...]
-            spike = torch.from_numpy(spike).float()
-
+        # # get spike
+        # # gt_center_ori_index = self._get_ori_index(blurry_rgb_path)
+        # gt_center_ori_index = self._get_ori_index(blurry_rgb_path) + offest
+        # left_idx = gt_center_ori_index - self.length_spike//2
+        # right_idx = gt_center_ori_index + self.length_spike//2
         # spike = load_vidar_dat(spike_path, width=self.Ws, height=self.Hs)
-        # spike = torch.from_numpy(spike).float()
+        # ori_spike_len = spike.shape[0]
+        # if left_idx < 0:
+        #     spike = spike[:right_idx+1, ...]
+        #     spike = torch.from_numpy(spike).float()
+        #     zeros = torch.ones(0-left_idx,self.Hs,self.Ws)
+        #     spike = torch.cat([zeros,spike],0)
+        # if right_idx >= ori_spike_len:
+        #     spike = spike[left_idx:, ...]
+        #     spike = torch.from_numpy(spike).float()
+        #     zeros = torch.ones(right_idx-ori_spike_len+1,self.Hs,self.Ws)
+        #     spike = torch.cat([spike,zeros],0)
+        # else:
+        #     spike = load_vidar_dat(spike_path, width=self.Ws, height=self.Hs)[left_idx:right_idx+1, ...]
+        #     spike = torch.from_numpy(spike).float()
+
+        spike = load_vidar_dat(spike_path, width=self.Ws, height=self.Hs)
+        spike = torch.from_numpy(spike).float()
 
         # spike = middleTFI(spike, middle=self.length_spike//2)/0.5
         # spike = torch.from_numpy(spike).unsqueeze(0).float()

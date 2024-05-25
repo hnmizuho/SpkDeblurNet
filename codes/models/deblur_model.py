@@ -126,7 +126,7 @@ class SpikeDeblur_Model(BaseModel):
     def optimize_parameters(self, step):
         self.optimizer.zero_grad()
 
-        self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.tfi)
+        self.pred, self.recon, self.quick_sharp = self.MoBanNet(self.blur, self.spike, self.tfi)
         # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
         # self.gt_mask = self.get_gt_mask(self.blur_gray,self.gt_gray)
         l_n2n = self.loss_forward(self.pred, self.gt) + self.loss_forward(self.recon, self.gt_gray) + self.loss_forward(self.quick_sharp, self.gt)
@@ -153,7 +153,7 @@ class SpikeDeblur_Model(BaseModel):
         self.MoBanNet.eval()
         with torch.no_grad():
             # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t)
-            self.pred, self.recon, self.quick_sharp, self.soft_mask = self.MoBanNet(self.blur, self.spike, self.tfi)
+            self.pred, self.recon, self.quick_sharp = self.MoBanNet(self.blur, self.spike, self.tfi)
             # self.pred, self.recon = self.MoBanNet(self.blur, self.spike, self.t, self.tfi, self.blur_gray)
 
         self.MoBanNet.train()
@@ -171,7 +171,6 @@ class SpikeDeblur_Model(BaseModel):
 
         out_dict["recon"] = self.recon.detach().cpu()
         out_dict["gt_gray"] = self.gt_gray.detach().cpu()
-        out_dict["soft_mask"] = self.soft_mask.detach().cpu()
         out_dict["quick_sharp"] = self.quick_sharp.detach().cpu()
         # out_dict["flow"] = self.flow.detach().cpu()
 

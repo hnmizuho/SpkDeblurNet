@@ -4,7 +4,7 @@ import torch
 import cv2
 
 model = SpkDeblurNet(S_in_chs=56).cuda()
-model.load_state_dict(torch.load("./gopro_100000_SpikeDeblur.pth"))
+model.load_state_dict(torch.load("./pretrained/gopro_100000_SpikeDeblur.pth"))
 
 x = cv2.imread("./000.jpg")
 x = cv2.resize(x, (800, 500))/255

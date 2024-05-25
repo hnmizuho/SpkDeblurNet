@@ -1,29 +1,29 @@
 #### general settings
-name: 56_full_gopro # experiment params. support debug.
+name: 65_xv4k # experiment params. support debug.
 use_tb_logger: true
 model: SpikeDeblur
 gpu_ids: [2,3]
 
 #### description
-description: "56 full,  gopro"
+description: "65 full,  X4K1000FPS"
 
 #### datasets
 datasets:
   train:
-    d_name: GoPro
-    dataset_root: '/home/data/'
+    d_name: X4K1000FPS
+    dataset_root: '/home/data10T/jyzhang/x4k1000fps/'
     reduce_scale: 1
-    length_spike: 56
+    length_spike: 65
 
     n_workers: 8   # actual n_workers
     batch_size: 8  # actual bt for both single and multi GPUs
     crop_size: 256
 
   val:
-    d_name: GoPro
-    dataset_root: '/home/data/'
+    d_name: X4K1000FPS
+    dataset_root: '/home/data10T/jyzhang/x4k1000fps/'
     reduce_scale: 1
-    length_spike: 56
+    length_spike: 65
 
     n_workers: 8
     batch_size: 8
@@ -60,10 +60,10 @@ train:
   gradient_clipping:
 
   manual_seed: 1314
-  val_freq: !!float 999999 #iter
+  val_freq: !!float 10000 #iter
 
 
 #### logger
 logger:
   print_freq: 100 #iter
-  save_checkpoint_freq: !!float 2000 #iter
+  save_checkpoint_freq: !!float 10000 #iter

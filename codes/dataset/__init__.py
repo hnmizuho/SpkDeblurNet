@@ -56,9 +56,9 @@ def create_dataloader(dataset, dataset_opt, phase, opt=None, sampler=None):
 def create_dataset(dataset_opt, phase):
     d_name = dataset_opt['d_name']
     if d_name == 'GoPro':
-        from codes.dataset.gopro_dataset import GoPro_DatasetProvider as D
+        from dataset.gopro_dataset import GoPro_DatasetProvider as D
     elif d_name == 'X4K1000FPS':
-        from codes.dataset.x4k1000fps_dataset import X4K1000FPS_DatasetProvider as D
+        from dataset.x4k1000fps_dataset import X4K1000FPS_DatasetProvider as D
     else:
         raise NotImplementedError('Dataset [{:s}] is not recognized.'.format(d_name))
 

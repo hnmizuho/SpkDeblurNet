@@ -188,7 +188,6 @@ def main():
                     visuals = model.get_current_visuals() #仅仅展示一个batch的第一张图                    
                     pred = misc_utils.tensor2img(visuals['pred'][0])  # --> uint8 0-255
                     recon = misc_utils.tensor2img(visuals['recon'][0])  # --> uint8 0-255
-                    soft_mask = misc_utils.tensor2img(visuals['soft_mask'][0])  # --> uint8 0-255
                     blur = misc_utils.tensor2img(visuals['blur'][0])  # --> uint8 0-255
                     gt = misc_utils.tensor2img(visuals['gt'][0])  # --> uint8 0-255
                     gt_gray = misc_utils.tensor2img(visuals['gt_gray'][0])  # --> uint8 0-255
@@ -206,8 +205,6 @@ def main():
                     misc_utils.save_img(pred, save_img_path)
                     save_img_path_recon = os.path.join(img_dir, '{:s}_{:s}_Recon.png'.format(img_name, str(current_step) + '_psnr_{:.2f}'.format(single_psnr_recon)))
                     misc_utils.save_img(recon, save_img_path_recon)
-                    save_img_path_soft_mask = os.path.join(img_dir, '{:s}_{:s}_soft_mask.png'.format(img_name, str(current_step)))
-                    misc_utils.save_img(soft_mask, save_img_path_soft_mask)
                     # save_img_path_flow = os.path.join(img_dir, '{:s}_{:s}_flow.png'.format(img_name, str(current_step)))
                     # misc_utils.save_img(flow, save_img_path_flow)
 

@@ -11,7 +11,7 @@ import torch.multiprocessing as mp
 from dataset.data_sampler import DistIterSampler
 
 import options.options as option
-from utils import misc_utils, batch_utils
+from utils import misc_utils, batch_utils, spike_utils
 from dataset import create_dataloader, create_dataset
 from models import create_model
 
@@ -104,6 +104,11 @@ def main():
 
     psnr_val_rgb = []
     ssim_val_rgb = []
+
+    psnr_val_rgbquick_sharp = []
+    ssim_val_rgbquick_sharp = []
+    psnr_val_rgbrecon = []
+    ssim_val_rgbrecon = []
     idx = 0
     for val_data in val_loader:
         idx += 1
@@ -113,6 +118,12 @@ def main():
         visuals = model.get_current_visuals() #仍支持valid时，用大batch_size。
         for tmp_i in range(len(val_data['img_path'])):
             single_psnr = batch_utils.batch_PSNR(model.pred[tmp_i].unsqueeze(0).detach().cpu(), model.gt[tmp_i].unsqueeze(0).detach().cpu(), 1.)
+            single_psnr_quick_sharp = batch_utils.batch_PSNR(model.quick_sharp[tmp_i].unsqueeze(0).detach().cpu(), model.gt[tmp_i].unsqueeze(0).detach().cpu(), 1.)
+            single_psnr_recon = batch_utils.batch_PSNR(model.recon[tmp_i].unsqueeze(0).detach().cpu(), model.gt_gray[tmp_i].unsqueeze(0).detach().cpu(), 1.)
+            
+            single_ssim = batch_utils.batch_SSIM(model.pred[tmp_i].unsqueeze(0).detach().cpu(), model.gt[tmp_i].unsqueeze(0).detach().cpu())
+            single_ssim_quick_sharp = batch_utils.batch_SSIM(model.quick_sharp[tmp_i].unsqueeze(0).detach().cpu(), model.gt[tmp_i].unsqueeze(0).detach().cpu())
+            single_ssim_recon = batch_utils.batch_SSIM(model.recon[tmp_i].unsqueeze(0).detach().cpu(), model.gt_gray[tmp_i].unsqueeze(0).detach().cpu())
 
             img_name = os.path.splitext(os.path.basename(val_data['img_path'][tmp_i]))[0] #保留一个batch中的所有图片
             img_dir = os.path.join(opt['path']['val_images'], img_name + '_psnr_{:.2f}'.format(single_psnr))
@@ -122,33 +133,57 @@ def main():
             blur = misc_utils.tensor2img(visuals['blur'][tmp_i])  # --> uint8 0-255
             gt = misc_utils.tensor2img(visuals['gt'][tmp_i])  # --> uint8 0-255
             quick_sharp = misc_utils.tensor2img(visuals['quick_sharp'][tmp_i])  # --> uint8 0-255
-            spike_tfp = misc_utils.tensor2img(torch.mean(visuals['spike'][tmp_i],dim=0))  # --> uint8 0-255
+            recon = misc_utils.tensor2img(visuals['recon'][tmp_i])  # --> uint8 0-255
+            
+            # spike_tfp = misc_utils.tensor2img(torch.mean(visuals['spike'][tmp_i][32-15:32+16],dim=0)/0.5)  # --> uint8 0-255
+            spike_tfi = misc_utils.tensor2img(torch.from_numpy(spike_utils.middleTFI(visuals['spike'][tmp_i].numpy(),56//2)/0.5))  # --> uint8 0-255
 
             # Save recon images
-            save_img_path = os.path.join(img_dir, '{:s}.png'.format(img_name + '_psnr_{:.2f}'.format(single_psnr)))
+            save_img_path = os.path.join(img_dir, '{:s}.png'.format(img_name + '_psnr_{:.2f}'.format(single_psnr)+ '_ssim_{:.3f}'.format(single_ssim)))
             misc_utils.save_img(pred, save_img_path)
+
+            quick_sharpquick_sharp = os.path.join(img_dir, '{:s}.png'.format(img_name + '_quick_sharp_psnr_{:.2f}'.format(single_psnr_quick_sharp)+ '_ssim_{:.3f}'.format(single_ssim_quick_sharp)))
+            misc_utils.save_img(quick_sharp, quick_sharpquick_sharp)
+            reconrecon = os.path.join(img_dir, '{:s}.png'.format(img_name + '_recon_psnr_{:.2f}'.format(single_psnr_recon)+ '_ssim_{:.3f}'.format(single_ssim_recon)))
+            misc_utils.save_img(recon, reconrecon)
 
             # Save ground truth
             save_img_path_gt = os.path.join(img_dir, '{:s}_GT.png'.format(img_name))
             misc_utils.save_img(gt, save_img_path_gt)
             save_img_path_blur = os.path.join(img_dir, '{:s}_blur.png'.format(img_name))
             misc_utils.save_img(blur, save_img_path_blur)
-            save_img_path_spiketfp = os.path.join(img_dir, '{:s}_spiketfp.png'.format(img_name))
-            misc_utils.save_img(spike_tfp, save_img_path_spiketfp)
-            save_img_path_quick_sharp = os.path.join(img_dir, '{:s}_quick_sharp.png'.format(img_name))
-            misc_utils.save_img(quick_sharp, save_img_path_quick_sharp)
+            save_img_path_spiketfi = os.path.join(img_dir, '{:s}_spiketfi.png'.format(img_name))
+            misc_utils.save_img(spike_tfi, save_img_path_spiketfi)
 
         # calculate metric
         psnr_val_rgb.append(batch_utils.batch_PSNR(model.pred.detach().cpu(), model.gt.detach().cpu(), 1.))
         ssim_val_rgb.append(batch_utils.batch_SSIM(model.pred.detach().cpu(), model.gt.detach().cpu()))
 
+        psnr_val_rgbquick_sharp.append(batch_utils.batch_PSNR(model.quick_sharp.detach().cpu(), model.gt.detach().cpu(), 1.))
+        ssim_val_rgbquick_sharp.append(batch_utils.batch_SSIM(model.quick_sharp.detach().cpu(), model.gt.detach().cpu()))
+        psnr_val_rgbrecon.append(batch_utils.batch_PSNR(model.recon.detach().cpu(), model.gt_gray.detach().cpu(), 1.))
+        ssim_val_rgbrecon.append(batch_utils.batch_SSIM(model.recon.detach().cpu(), model.gt_gray.detach().cpu()))
+
     psnr = sum(psnr_val_rgb) / len(psnr_val_rgb)
     ssim = sum(ssim_val_rgb) / len(ssim_val_rgb)
+
+    psnrquick_sharp = sum(psnr_val_rgbquick_sharp) / len(psnr_val_rgbquick_sharp)
+    ssimquick_sharp = sum(ssim_val_rgbquick_sharp) / len(ssim_val_rgbquick_sharp)
+    psnrrecon = sum(psnr_val_rgbrecon) / len(psnr_val_rgbrecon)
+    ssimrecon = sum(ssim_val_rgbrecon) / len(ssim_val_rgbrecon)
 
     # log psnr and ssim
     logger.info('# Validation # PSNR: {:.4e}. # SSIM: {:.4e}.'.format(psnr, ssim))
     logger_val = logging.getLogger('val')  # validation logger
-    logger_val.info('<********** VALID ***********> psnr: {:.4e}. ssim: {:.4e}.'.format(psnr, ssim))
+    logger_val.info('<********** pred VALID ***********> psnr: {:.4e}. ssim: {:.4e}.'.format(psnr, ssim))
+
+    logger.info('# Validation # PSNR: {:.4e}. # SSIM: {:.4e}.'.format(psnrquick_sharp, ssimquick_sharp))
+    logger_val = logging.getLogger('val')  # validation logger
+    logger_val.info('<********** quick VALID ***********> psnr: {:.4e}. ssim: {:.4e}.'.format(psnrquick_sharp, ssimquick_sharp))
+
+    logger.info('# Validation # PSNR: {:.4e}. # SSIM: {:.4e}.'.format(psnrrecon, ssimrecon))
+    logger_val = logging.getLogger('val')  # validation logger
+    logger_val.info('<********** recon VALID ***********> psnr: {:.4e}. ssim: {:.4e}.'.format(psnrrecon, ssimrecon))
 
 if __name__ == '__main__':
     main()
